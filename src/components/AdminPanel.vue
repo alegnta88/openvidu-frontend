@@ -22,8 +22,8 @@
       <table v-if="agents.length">
         <thead>
           <tr>
-            <th>Username</th>
-            <th>Active</th>
+            <th>User Name</th>
+            <th>Status</th>
             <th>Toggle</th>
           </tr>
         </thead>
@@ -148,3 +148,4 @@ export default {
   }
 }
 </script>
+
