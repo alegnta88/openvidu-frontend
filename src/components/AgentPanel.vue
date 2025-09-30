@@ -1,34 +1,21 @@
 <template>
   <div class="container">
-    <h2>Agent Panel</h2>
-
-    <!-- Create Video KYC Session -->
-    <div class="section">
-      <h3>Create Video KYC Session</h3>
-      <input v-model="phone" type="text" placeholder="Customer Phone" />
-      <button @click="createSession">Create Session</button>
-      <p v-if="status" :style="{ color: statusColor }">{{ status }}</p>
+    <div class="header" style="display: flex; justify-content: space-between; align-items: center;">
+      <h2>Welcome, {{ username }}</h2>
+      <button @click="logout" class="logout-btn">Logout</button>
     </div>
 
-    <!-- Active sessions (optional) -->
-    <div class="section" v-if="sessions.length">
-      <h3>Active Sessions</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Customer Phone</th>
-            <th>Your URL</th>
-            <th>Customer URL</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(s, index) in sessions" :key="index">
-            <td>{{ s.phone }}</td>
-            <td><a :href="s.agentJoinUrl" target="_blank">Join</a></td>
-            <td><a :href="s.customerJoinUrl" target="_blank">Customer Link</a></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="section">
+      <h3>Create Video KYC Session</h3>
+      <input v-model="phone" type="text" placeholder="Enter customer phone">
+      <button @click="createSession">Create Session</button>
+      <div id="status">{{ status }}</div>
+    </div>
+
+    <div v-if="sessionUrls.agentJoinUrl" class="section">
+      <h3>Session Links</h3>
+      <p><a :href="sessionUrls.agentJoinUrl" target="_blank">Join as Agent</a></p>
+      <p><a :href="sessionUrls.customerJoinUrl" target="_blank">Share with Customer</a></p>
     </div>
   </div>
 </template>
@@ -38,20 +25,25 @@ export default {
   props: ['token'],
   data() {
     return {
+      username: localStorage.getItem('username') || 'Agent',
       phone: '',
       status: '',
-      statusColor: 'black',
-      sessions: []
+      sessionUrls: {}
     }
   },
   methods: {
+    logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      localStorage.removeItem('username');
+      window.location.reload();
+    },
     async createSession() {
-      if (!this.phone) {
-        this.status = "Customer phone is required";
-        this.statusColor = "red";
+      if (!this.phone.trim()) {
+        this.status = "Phone is required";
         return;
       }
-
+      this.status = "Creating session...";
       try {
         const res = await fetch('http://localhost:3000/create-session', {
           method: 'POST',
@@ -61,80 +53,41 @@ export default {
           },
           body: JSON.stringify({ phone: this.phone })
         });
-
         const data = await res.json();
         if (data.success) {
-          this.status = "Session created successfully!";
-          this.statusColor = "green";
-          this.sessions.push({
-            phone: this.phone,
+          this.status = "Session created!";
+          this.sessionUrls = {
             agentJoinUrl: data.agentJoinUrl,
             customerJoinUrl: data.customerJoinUrl
-          });
-          this.phone = '';
+          };
         } else {
-          this.status = "Error: " + data.error;
-          this.statusColor = "red";
+          this.status = data.error || "Failed to create session";
         }
       } catch (err) {
-        this.status = "Error: " + err.message;
-        this.statusColor = "red";
+        this.status = err.message;
       }
     }
   }
 }
 </script>
 
-<style scoped>
-.container {
-  max-width: 600px;
-  margin: 40px auto;
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-h2, h3 {
-  text-align: center;
-  color: #333;
-}
-input, button {
-  width: 100%;
-  padding: 12px 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 16px;
-}
-button {
-  background: #4CAF50;
+<style>
+.logout-btn {
+  background-color: #f44336;
   color: white;
   border: none;
+  padding: 16px 12px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.3s;
+  width: 120px;
 }
-button:hover { background: #45a049; }
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
+.logout-btn:hover {
+  background-color: #d32f2f;
 }
-th, td {
-  padding: 10px;
-  border: 1px solid #ccc;
-  text-align: center;
-}
-th {
-  background: #f4f4f4;
-}
-a {
-  color: #007bff;
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
-}
-.section {
-  margin-bottom: 30px;
-}
+.section { margin-top: 20px; }
+input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ccc; }
+button { padding: 10px; border: none; border-radius: 6px; background-color: #4CAF50; color: white; cursor: pointer; }
+button:hover { background-color: #45a049; }
+a { color: #1976d2; text-decoration: none; }
+a:hover { text-decoration: underline; }
 </style>
