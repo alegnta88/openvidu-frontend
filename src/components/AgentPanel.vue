@@ -70,24 +70,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.logout-btn {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 16px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  width: 120px;
-}
-.logout-btn:hover {
-  background-color: #d32f2f;
-}
-.section { margin-top: 20px; }
-input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ccc; }
-button { padding: 10px; border: none; border-radius: 6px; background-color: #4CAF50; color: white; cursor: pointer; }
-button:hover { background-color: #45a049; }
-a { color: #1976d2; text-decoration: none; }
-a:hover { text-decoration: underline; }
-</style>
