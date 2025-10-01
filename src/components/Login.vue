@@ -42,6 +42,7 @@ export default {
         const data = await res.json();
         if (data.token) {
           localStorage.setItem('token', data.token);
+          localStorage.setItem('username', data.username);
           localStorage.setItem('role', data.role);
           this.status = "Login successful!";
           this.isError = false;
