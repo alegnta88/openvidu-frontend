@@ -12,6 +12,7 @@
       <div id="status">{{ status }}</div>
     </div>
 
+    
     <div v-if="sessionUrls.agentJoinUrl" class="section">
       <h3>Session Links</h3>
       <p><a :href="sessionUrls.agentJoinUrl" target="_blank">Join as Agent</a></p>
